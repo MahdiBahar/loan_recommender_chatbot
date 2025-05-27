@@ -1,0 +1,6 @@
+#openai
+langchain_community
+#langchain
+numexpr
+uvicorn # deploy on app
+fastapi #deploy on app

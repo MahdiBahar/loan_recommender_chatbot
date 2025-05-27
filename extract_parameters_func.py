@@ -14,6 +14,10 @@ from random_responses import (
 )
 from filter_sort import get_query_params, load_record
 
+from Rag_chat import Chat
+import torch
+torch.cuda.empty_cache()
+chat_RAG = Chat()
 
 # 1) Validation rules, labels & suffixes
 VALID_CRITERIA = {
@@ -110,7 +114,9 @@ def extract_parameters(
     except Exception:
         # If parsing fails, return fallback
         # fallback = {k: None for k in VALID_CRITERIA}
-        msg_list_param.append(random_irrelevant())
+        message_chat_RAG = chat_RAG.QA_with_rag(user_input)
+        msg_list_param.append(message_chat_RAG)
+        # msg_list_param.append(random_irrelevant())
         
         return fallback, msg_list_param , False, {}
 
@@ -124,15 +130,19 @@ def extract_parameters(
         new_params.get(k) is None for k in new_params if k != "Loan_field"
     ):
         # raw_msg = random_loan_field()
-        msg_list_param.append(random_loan_field())
+        message_chat_RAG = chat_RAG.QA_with_rag(user_input)
+        msg_list_param.append(message_chat_RAG)
+        # msg_list_param.append(random_loan_field())
         rb = False
 
     elif new_params.get("hello_msg") and all(
         new_params.get(k) is None for k in new_params if k != "hello_msg"  
     ):
         # msg_response_hi = "چه کمکی در زمینه وام از من برمیاد که برات انجام بدم؟"
-        msg_response_hi = random_hello()
-        msg_list_param.append(msg_response_hi)
+        # msg_response_hi = random_hello()
+        # msg_list_param.append(msg_response_hi)
+        message_chat_RAG = chat_RAG.QA_with_rag(user_input)
+        msg_list_param.append(message_chat_RAG)
         rb = False
 
     elif new_params.get("Loan_field") and new_params.get("hello_msg") and all(
@@ -140,12 +150,16 @@ def extract_parameters(
     ):
         # msg_response_hi = "چه کمکی در زمینه وام از من برمیاد که برات انجام بدم؟"
         # msg_list_param.append(msg_response_hi)
-        msg_list_param.append(random_loan_field())
+        message_chat_RAG = chat_RAG.QA_with_rag(user_input)
+        msg_list_param.append(message_chat_RAG)
+        # msg_list_param.append(random_loan_field())
         rb = False
 
     elif not any(v is not None for v in new_params.values()):
         # raw_msg = random_irrelevant()
-        msg_list_param.append(random_irrelevant())
+        message_chat_RAG = chat_RAG.QA_with_rag(user_input)
+        msg_list_param.append(message_chat_RAG)
+        # msg_list_param.append(random_irrelevant())
         rb = False
     else:
         # Validate each extracted value
@@ -211,6 +225,8 @@ def extract_parameters(
                 msg_list_param.append("اگر مقدار وام یا میزان سپرده مدنظرت را بهم بگی بهتر میتونم کمکت کنم.")
                 rb =False
             else:
+                # message_chat_RAG = chat_RAG.QA_with_rag(user_input)
+                # msg_list_param.append(message_chat_RAG)
                 msg_list_param.append(random_invite())
                 rb = True
 
@@ -249,6 +265,8 @@ def extract_parameters(
                 msg_list_param.append("اگر مقدار وام یا میزان سپرده مدنظرت را بهم بگی بهتر میتونم کمکت کنم.")
                 rb =False
             else:
+                # message_chat_RAG = chat_RAG.QA_with_rag(user_input)
+                # msg_list_param.append(message_chat_RAG)
                 msg_list_param.append(random_invite())
                 rb = True
     else:
