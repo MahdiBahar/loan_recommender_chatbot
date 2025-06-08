@@ -15,8 +15,8 @@ def LLM(model="phi4:latest" , temp = 0):
 
 
 
-def embeddings():
-    embedding = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
+# def embeddings():
+#     embedding = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
         
-    return embedding
+#     return embedding
     

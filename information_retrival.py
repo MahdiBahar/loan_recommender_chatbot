@@ -10,8 +10,8 @@ class IR():
     def __init__(self , k = 1):
 
         
-        self.embeddings = HuggingFaceEmbeddings(model_name="hiieu/halong_embedding")
-        # self.embeddings = HuggingFaceEmbeddings(model_name="/home/mahdi/loan_recommender_chatbot/model/halong_finetuned_APN_1036_frezzed-V0.9")
+        # self.embeddings = HuggingFaceEmbeddings(model_name="hiieu/halong_embedding")
+        self.embeddings = HuggingFaceEmbeddings(model_name="/home/mahdi/loan_recommender_chatbot/model/halong_finetuned_APN_1036_frezzed-V0.9")
         self.k = k
         docs = []
         data = pd.read_excel("question.xlsx").to_numpy()
