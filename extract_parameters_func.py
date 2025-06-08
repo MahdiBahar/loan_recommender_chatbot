@@ -13,9 +13,10 @@ from random_responses import (
     random_hello,
 )
 from filter_sort import get_query_params, load_record
-
+import re
 from Rag_chat import Chat
 import torch
+
 torch.cuda.empty_cache()
 chat_RAG = Chat()
 
@@ -168,6 +169,54 @@ def extract_parameters(
                 continue
             elif k == "hello_msg" or v is None:
                 continue
+            # ---- special case for credit_score ----
+            if k == "Credit_score":
+                # 1) Did LLM give us a single ASCII letter?
+                if isinstance(v, str) and re.fullmatch(r"[A-Za-z]", v):
+                    normalized = v.upper()
+                    if normalized in VALID_CRITERIA["Credit_score"]:
+                        valid_updates[k] = normalized
+                    else:
+                        # letter but out of A–E
+                        hint = ", ".join(VALID_CRITERIA["Credit_score"][:-1])
+                        invalid_keys.append(k)
+                        inv_keys.append(LABELS[k])
+                        invalid_msgs.append(
+                            random_invalid(LABELS[k]) 
+                            # + f"invalid_key : {inv_keys}"
+                            + (f"( راهنمایی : مقادیر مجاز  {hint}.)" if hint else "")
+                        )
+                        
+                else:
+                    # non-English or multi-char => fallback to advisor/irrelevant
+                    # base_msg = random_irrelevant()  # or advisor_chain.run(...)
+                    # result_str = base_msg
+                    # break   # stop processing further keys
+                    message_chat_RAG = chat_RAG.QA_with_rag(user_input)
+                    msg_list_param.append(message_chat_RAG)
+                # done with this key
+                continue
+        
+        
+        
+        # # special Credit_score check (accept a–e or A–E)
+        #     if k == "Credit_score":
+        #         if isinstance(v, str):
+        #             v_norm = v.strip().upper()
+        #         else:
+        #             v_norm = v
+        #         # now only accept A–E
+        #         if not re.fullmatch(r"[A-E]", v_norm):
+        #             invalid_keys.append(k)
+        #             invalid_msgs.append(
+        #                 random_invalid(LABELS[k])
+        #                 + "(راهنمایی: رتبه اعتباری باید A، B، C، D یا E باشد.)"
+        #             )
+        #             continue
+        #         else:
+        #             # store the uppercase version
+        #             valid_updates[k] = v_norm
+        #             continue
             crit = VALID_CRITERIA[k]
             ok, hint = True, None
             if isinstance(crit, list) and v not in crit:
@@ -176,7 +225,7 @@ def extract_parameters(
                 ok, hint = False, " حداکثر مقدار وام، ۳۰۰ میلیون تومان هست."
             if ok:
                 valid_updates[k] = v
-            else:
+            elif k != "Credit_score":
                 invalid_keys.append(k)
                 inv_keys.append(LABELS[k])
                 invalid_msgs.append(
