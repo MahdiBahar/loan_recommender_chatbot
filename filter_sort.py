@@ -6,12 +6,14 @@ from typing import List, Dict, Any, Optional
 
 # Load parameter weights once
 def load_record() -> Dict[str, Any]:
-    with open('MEC-LoanRecomn_Scenarios-V17.json', 'r', encoding='utf-8') as f:
+    with open('MEC-LoanRecomn_Scenarios-V19.json', 'r', encoding='utf-8') as f:
         return json.load(f)
 
 # _records = load_record()
 
 
+
+from typing import Tuple
 
 def get_query_params( _records, 
     deposit__amount: Optional[float] = None,
@@ -20,7 +22,7 @@ def get_query_params( _records,
     interest__rate: Optional[float] = None,
     credit__score: Optional[str] = None,
     loan__amount: Optional[float] = None
-) -> List[Dict[str, Any]]:   #Input values are Toman
+) -> Tuple[List[Dict[str, Any]], int]:   #Input values are Toman
 
 
     if loan__amount:
