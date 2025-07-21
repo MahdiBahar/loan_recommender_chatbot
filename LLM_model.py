@@ -6,7 +6,7 @@ import ast
 
 
 
-
+# llm = Ollama(model="deepseek-r1:1.5b-qwen-distill-q4_K_M", base_url="http://192.168.0.10:11434",temperature= 0)
 # Initialize the LLM (using Ollama in this example).
 llm = Ollama(model="phi4:latest", base_url="http://192.168.0.10:11434",temperature= 0)
 # llm = Ollama(model="phi4:latest", base_url="http://localhost:11434",temperature= 0)

@@ -17,6 +17,8 @@ import re
 from Rag_chat import Chat
 import torch
 
+from relevent_checker import cheker
+
 torch.cuda.empty_cache()
 chat_RAG = Chat()
 
@@ -116,8 +118,12 @@ def extract_parameters(
         # If parsing fails, return fallback
         # fallback = {k: None for k in VALID_CRITERIA}
         message_chat_RAG = chat_RAG.QA_with_rag(user_input)
-        msg_list_param.append(message_chat_RAG)
-        # msg_list_param.append(random_irrelevant())
+        is_relevent , confidence = cheker(user_input,message_chat_RAG)
+        if is_relevent:
+
+            msg_list_param.append(message_chat_RAG)
+        else:
+            msg_list_param.append(random_irrelevant())
         
         return fallback, msg_list_param , False, {}, []
 
@@ -132,19 +138,31 @@ def extract_parameters(
     ):
         # raw_msg = random_loan_field()
         message_chat_RAG = chat_RAG.QA_with_rag(user_input)
-        msg_list_param.append(message_chat_RAG)
+        is_relevent , confidence = cheker(user_input,message_chat_RAG)
+        if is_relevent:
+
+            msg_list_param.append(message_chat_RAG)
+            rb = False
+        else:
+            msg_list_param.append(random_irrelevant())
         # msg_list_param.append(random_loan_field())
-        rb = False
+        
 
     elif new_params.get("hello_msg") and all(
         new_params.get(k) is None for k in new_params if k != "hello_msg"  
     ):
-        # msg_response_hi = "چه کمکی در زمینه وام از من برمیاد که برات انجام بدم؟"
+        # msg_response_hi = "سلام! چطور می‌توانم در زمینه وام‌های بانک ملت کمکتان کنم؟"
         # msg_response_hi = random_hello()
         # msg_list_param.append(msg_response_hi)
         message_chat_RAG = chat_RAG.QA_with_rag(user_input)
         msg_list_param.append(message_chat_RAG)
-        rb = False
+        # is_relevent , confidence = cheker(user_input,message_chat_RAG)
+        # if is_relevent:
+
+        #     msg_list_param.append(message_chat_RAG)
+        #     rb = False
+        # else:
+        #     msg_list_param.append(random_irrelevant())
 
     elif new_params.get("Loan_field") and new_params.get("hello_msg") and all(
         new_params.get(k) is None for k in new_params if k != "Loan_field" and k != "hello_msg"
@@ -152,16 +170,24 @@ def extract_parameters(
         # msg_response_hi = "چه کمکی در زمینه وام از من برمیاد که برات انجام بدم؟"
         # msg_list_param.append(msg_response_hi)
         message_chat_RAG = chat_RAG.QA_with_rag(user_input)
-        msg_list_param.append(message_chat_RAG)
-        # msg_list_param.append(random_loan_field())
-        rb = False
+        is_relevent , confidence = cheker(user_input,message_chat_RAG)
+        if is_relevent:
+
+            msg_list_param.append(message_chat_RAG)
+            rb = False
+        else:
+            msg_list_param.append(random_irrelevant())
 
     elif not any(v is not None for v in new_params.values()):
         # raw_msg = random_irrelevant()
         message_chat_RAG = chat_RAG.QA_with_rag(user_input)
-        msg_list_param.append(message_chat_RAG)
-        # msg_list_param.append(random_irrelevant())
-        rb = False
+        is_relevent , confidence = cheker(user_input,message_chat_RAG)
+        if is_relevent:
+
+            msg_list_param.append(message_chat_RAG)
+            rb = False
+        else:
+            msg_list_param.append(random_irrelevant())
     else:
         # Validate each extracted value
         for k, v in new_params.items():
@@ -193,7 +219,13 @@ def extract_parameters(
                     # result_str = base_msg
                     # break   # stop processing further keys
                     message_chat_RAG = chat_RAG.QA_with_rag(user_input)
+                    is_relevent , confidence = cheker(user_input,message_chat_RAG)
                     msg_list_param.append(message_chat_RAG)
+                    if is_relevent:
+
+                        msg_list_param.append(message_chat_RAG)
+                    else:
+                        msg_list_param.append(random_irrelevant())
                 # done with this key
                 continue
         
